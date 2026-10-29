@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LAVASA UNITE — Problem Reporting &amp; Rapid Field Dispatch</title>
+  <meta name="description" content="Report water outages, electrical breakdowns, and urgent security situations directly to Lavasa field response teams with live two-way tracking.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    /* Specific styles for standalone problem reporting portal */
+    .portal-main {
+      padding-top: 130px;
+      padding-bottom: 100px;
+      min-height: 100vh;
+      position: relative;
+      z-index: 2;
+    }
+
+    .portal-nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .btn-back-home {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-back-home:hover {
+      color: var(--text-muted);
+      transform: translateX(-4px);
+    }
+
+    .portal-header-meta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .portal-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2.4rem, 4.5vw, 4.2rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    .portal-subtitle {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      max-width: 720px;
+      margin-bottom: 50px;
+      font-weight: 300;
+    }
+
+    .report-card-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 48px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+      margin-bottom: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .report-card-wrapper {
+        padding: 24px;
+      }
+    }
+
+    .report-step-section {
+      margin-bottom: 40px;
+      padding-bottom: 32px;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .report-step-section:last-of-type {
+      border-bottom: none;
+      padding-bottom: 10px;
+    }
+
+    .step-heading {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .step-number-tag {
+      background: var(--text-primary);
+      color: var(--bg-color);
+      padding: 2px 8px;
+      border-radius: 2px;
+      font-size: 0.68rem;
+    }
+
+    .category-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 860px) {
+      .category-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cat-select-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 140px;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .cat-select-card:hover {
+      border-color: var(--text-primary);
+      background: var(--bg-card);
+      transform: translateY(-2px);
+    }
+
+    .cat-select-card.active {
+      border-color: var(--text-primary);
+      background: var(--bg-card);
+      box-shadow: 0 0 0 2px var(--text-primary);
+    }
+
+    .cat-select-card .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .cat-select-card .card-name {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin: 12px 0 6px 0;
+    }
+
+    .cat-select-card .card-desc {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .cat-select-card.cat-water.active .card-name { color: var(--accent-water); }
+    .cat-select-card.cat-electric.active .card-name { color: var(--accent-electric); }
+    .cat-select-card.cat-security.active .card-name { color: var(--accent-security); }
+
+    .quick-sector-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .sector-chip {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 8px 14px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .sector-chip:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .sector-chip.selected {
+      background: var(--text-primary);
+      color: var(--bg-color);
+      border-color: var(--text-primary);
+    }
+
+    .gps-detect-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      margin-top: 10px;
+    }
+
+    .btn-gps-detect {
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      cursor: pointer;
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-gps-detect:hover {
+      border-color: var(--text-primary);
+      background: var(--bg-surface);
+    }
+
+    .form-row-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .form-row-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .evidence-upload-zone {
+      border: 1px dashed var(--border-strong);
+      border-radius: 4px;
+      padding: 24px;
+      text-align: center;
+      background: var(--bg-surface);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .evidence-upload-zone:hover {
+      border-color: var(--text-primary);
+      background: var(--bg-card);
+    }
+
+    .evidence-upload-text {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+    }
+
+    .upload-preview-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.68rem;
+      color: var(--status-active);
+      font-family: var(--font-mono);
+    }
+
+    /* Live Field Terminal in report view */
+    .field-terminal-wrap {
+      display: none;
+    }
+
+    .field-terminal-wrap.active {
+      display: block;
+      animation: fadeInTerminal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInTerminal {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ticket-meta-banner {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .ticket-meta-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+    }
+
+    .eta-timer-pill {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: var(--text-primary);
+      color: var(--bg-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-reset-report {
+      background: none;
+      border: 1px solid var(--border-color);
+      padding: 10px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-reset-report:hover {
+      border-color: var(--text-primary);
+      background: var(--text-primary);
+      color: var(--bg-color);
+    }
+
+    .hotline-emergency-strip {
+      background: var(--accent-security-soft);
+      border: 1px solid var(--accent-security);
+      padding: 18px 24px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 36px;
+    }
+
+    @media (max-width: 600px) {
+      .hotline-emergency-strip {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+
+    .hotline-emergency-strip strong {
+      color: var(--accent-security);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fullscreen WebGL Ambient Canvas -->
+  <div id="webgl-container"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <a href="index.html" class="header-brand">
+      <span class="brand-title">LAVASA / UNITE</span>
+    </a>
+
+    <nav class="header-nav">
+      <a href="index.html" class="nav-link">&larr; Overview</a>
+      <a href="index.html#pillar-water" class="nav-link">01 / Water</a>
+      <a href="index.html#pillar-electric" class="nav-link">02 / Electricity</a>
+      <a href="index.html#pillar-security" class="nav-link">03 / Security</a>
+      <a href="index.html#radar-section" class="nav-link">Radar</a>
+      <a href="report.html" class="nav-link" style="border-bottom: 1px solid var(--text-primary);">Report Problem</a>
+    </nav>
+
+    <div class="header-actions">
+      <!-- Dark / Light Theme Toggle -->
+      <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Obsidian / Concrete Theme">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+
+      <!-- Instant Emergency Call Hotline -->
+      <a href="tel:+912066540000" class="btn-pill btn-emergency" style="text-decoration: none;">
+        <span>Hotline: 112 / +91 20 6654 0000</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="portal-main">
+    <div class="grid-container">
+      <div style="grid-column: 2 / span 10;">
+        
+        <div class="portal-nav-bar">
+          <a href="index.html" class="btn-back-home">&larr; Return to Lavasa Unite Main</a>
+          <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase;">Direct Field Dispatch Desk &bull; 24/7 Encrypted</span>
+        </div>
+
+        <div class="portal-header-meta">MUNICIPAL CRISIS RELAY &bull; CIVIC INCIDENT REGISTRATION</div>
+        <h1 class="portal-title">Report a Municipal Problem</h1>
+        <p class="portal-subtitle">
+          Submit immediate operational requests for dry taps, electrical grid collapse, or emergency security intervention. 
+          Your report immediately alerts on-duty field responders and initiates a live 2-way tracking session with ETA monitoring.
+        </p>
+
+        <!-- FORM CARD SECTION -->
+        <div id="report-form-card" class="report-card-wrapper">
+          
+          <!-- Step 1: Select Crisis Domain -->
+          <div class="report-step-section">
+            <div class="step-heading">
+              <span class="step-number-tag">STEP 01</span>
+              <span>Choose Crisis Domain</span>
+            </div>
+            <div class="category-cards-grid">
+              
+              <!-- Water -->
+              <div class="cat-select-card cat-water active" data-category="water">
+                <div class="card-top-row">
+                  <span>01 / HYDROLOGY</span>
+                  <span>TAP &amp; MAINS</span>
+                </div>
+                <div>
+                  <h3 class="card-name">Water &amp; Dry Taps</h3>
+                  <p class="card-desc">No water supply, dry taps, ruptured pipelines, brown water, or emergency tanker relief.</p>
+                </div>
+              </div>
+
+              <!-- Electricity -->
+              <div class="cat-select-card cat-electric" data-category="electric">
+                <div class="card-top-row">
+                  <span>02 / ENERGY GRID</span>
+                  <span>33kV &amp; FEEDERS</span>
+                </div>
+                <div>
+                  <h3 class="card-name">Power &amp; Blackout</h3>
+                  <p class="card-desc">Total blackouts, sparking transformers, downed live cables, brownouts, or dark corridors.</p>
+                </div>
+              </div>
+
+              <!-- Security -->
+              <div class="cat-select-card cat-security" data-category="security">
+                <div class="card-top-row">
+                  <span>03 / RAPID CORPS</span>
+                  <span>MOBILE PATROL</span>
+                </div>
+                <div>
+                  <h3 class="card-name">Security Intervention</h3>
+                  <p class="card-desc">Personal distress, facility trespassing, perimeter breach, crowd escalation, elder checks.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Step 2: Specific Nature of Disruption -->
+          <div class="report-step-section">
+            <div class="step-heading">
+              <span class="step-number-tag">STEP 02</span>
+              <span>Specific Nature of Problem</span>
+            </div>
+            <div id="portal-subproblem-chips" class="subproblem-chips">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Step 3: Location & Sector -->
+          <div class="report-step-section">
+            <div class="step-heading">
+              <span class="step-number-tag">STEP 03</span>
+              <span>Location &amp; Sector in Lavasa</span>
+            </div>
+
+            <div class="quick-sector-chips">
+              <button type="button" class="sector-chip selected" data-sector="Sector 01: Dasve Promenade">Sector 01: Dasve Promenade</button>
+              <button type="button" class="sector-chip" data-sector="Sector 02: Town Hall &amp; Portofino Core">Sector 02: Town Hall Core</button>
+              <button type="button" class="sector-chip" data-sector="Sector 03: Mugaon Valley">Sector 03: Mugaon Valley</button>
+              <button type="button" class="sector-chip" data-sector="Sector 04: Hill Top &amp; Ghat Pass">Sector 04: Hill Top Pass</button>
+              <button type="button" class="sector-chip" data-sector="Sector 05: Lakeside Villas">Sector 05: Lakeside Villas</button>
+            </div>
+
+            <input type="text" id="portal-input-address" class="input-minimal" placeholder="Exact apartment, street, landmark, or villa number..." value="Dasve Promenade, Block 4, Sector 01">
+            
+            <div class="gps-detect-bar">
+              <button type="button" id="btn-gps-simulate" class="btn-gps-detect">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                </svg>
+                Auto-Pin My GPS Coordinates
+              </button>
+              <span id="gps-status-indicator">Coordinates: 18.4082&deg; N, 73.5100&deg; E (Lavasa Valley)</span>
+            </div>
+          </div>
+
+          <!-- Step 4: Urgency Classification -->
+          <div class="report-step-section">
+            <div class="step-heading">
+              <span class="step-number-tag">STEP 04</span>
+              <span>Urgency Classification</span>
+            </div>
+            <div class="urgency-toggle-group">
+              <button type="button" class="urgency-btn" data-urgency="standard">Standard Priority (Next Dispatch Wave)</button>
+              <button type="button" class="urgency-btn selected" data-urgency="high">High Urgency (Under 30 Min Response)</button>
+              <button type="button" class="urgency-btn" data-urgency="critical" style="color: var(--accent-security);">Critical Immediate (Life / Safety Risk)</button>
+            </div>
+          </div>
+
+          <!-- Step 5: Reporter Details & Notes -->
+          <div class="report-step-section">
+            <div class="step-heading">
+              <span class="step-number-tag">STEP 05</span>
+              <span>Reporter Details &amp; Operational Notes</span>
+            </div>
+
+            <div class="form-row-2col" style="margin-bottom: 24px;">
+              <div>
+                <label class="form-label">Resident Name</label>
+                <input type="text" id="portal-resident-name" class="input-minimal" placeholder="e.g. Rahul Sharma" value="Resident Citizen">
+              </div>
+              <div>
+                <label class="form-label">Contact Number (For Field Technician Callback)</label>
+                <input type="tel" id="portal-resident-phone" class="input-minimal" placeholder="+91 98XXX XXXXX" value="+91 98230 44910">
+              </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+              <label class="form-label">Incident Specifics &amp; Access Instructions</label>
+              <textarea id="portal-input-notes" class="input-minimal" rows="3" placeholder="Describe the problem specifics (e.g., tap ran completely dry at 7 AM, water pump breaker tripped, transformer buzzing loud)...">Taps have been completely dry since 7:30 AM across the entire 4th-floor residential block. Water storage tank on terrace is depleted.</textarea>
+            </div>
+
+            <div>
+              <label class="form-label">Attach Photo / Video Evidence (Simulated)</label>
+              <div id="dropzone-evidence" class="evidence-upload-zone">
+                <div class="evidence-upload-text">&uarr; Click to upload photo of dry tap / sparking box / location landmark</div>
+                <div id="upload-status-tag" class="upload-preview-tag" style="display: none;">&check; Attached: IMG_LAVASA_EVIDENCE.JPG (1.8 MB)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transmit Action Button -->
+          <button type="button" id="btn-portal-submit" class="btn-dispatch-submit">
+            &rarr; Transmit Incident Report to Field Response Unit
+          </button>
+
+        </div>
+
+        <!-- ACTIVE TERMINAL & 2-WAY TRACKING (Appears on submit) -->
+        <div id="portal-active-terminal" class="field-terminal-wrap report-card-wrapper">
+          
+          <div class="ticket-meta-banner">
+            <div>
+              <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase;">CIVIC BRIDGE TICKET REGISTERED</span>
+              <div style="display: flex; align-items: center; gap: 14px; margin-top: 6px;">
+                <span id="portal-ticket-id" class="ticket-id-badge" style="font-size: 1.15rem;">LVS-WAT-4891</span>
+                <span class="active-indicator-dot"></span>
+                <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--status-active);">DISPATCH ACTIVE</span>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div class="eta-timer-pill">
+                <span>ESTIMATED CREW ARRIVAL:</span>
+                <strong id="portal-eta-counter">03m 45s</strong>
+              </div>
+              <button type="button" id="btn-new-report" class="btn-reset-report">+ Submit Another Report</button>
+            </div>
+          </div>
+
+          <!-- 4-Step Timeline Progression -->
+          <div class="dispatch-timeline" style="margin: 32px 0;">
+            <div id="portal-step-1" class="timeline-step completed">
+              <div class="step-node">&check;</div>
+              <span class="step-title">1. Received &amp; Logged</span>
+            </div>
+            <div id="portal-step-2" class="timeline-step completed">
+              <div class="step-node">&check;</div>
+              <span class="step-title">2. Field Crew Assigned</span>
+            </div>
+            <div id="portal-step-3" class="timeline-step active">
+              <div class="step-node">3</div>
+              <span class="step-title">3. En Route to Location</span>
+            </div>
+            <div id="portal-step-4" class="timeline-step">
+              <div class="step-node">4</div>
+              <span class="step-title">4. Resolution &amp; Sign-off</span>
+            </div>
+          </div>
+
+          <!-- Incident Details Summary Table -->
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px; margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; font-family: var(--font-mono); font-size: 0.72rem;">
+              <div>
+                <span style="color: var(--text-muted); display: block; margin-bottom: 4px;">CATEGORY:</span>
+                <strong id="summary-category" style="color: var(--text-primary);">HYDROLOGY (WATER)</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); display: block; margin-bottom: 4px;">REPORTED ISSUE:</span>
+                <strong id="summary-problem" style="color: var(--text-primary);">No water in taps (Complete outage)</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); display: block; margin-bottom: 4px;">ASSIGNED UNIT:</span>
+                <strong id="summary-crew" style="color: var(--text-primary);">HYDRO-UNIT 01 (Warasgaon Tech)</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); display: block; margin-bottom: 4px;">LOCATION:</span>
+                <strong id="summary-location" style="color: var(--text-primary);">Dasve Promenade, Block 4, Sector 01</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time Two-Way Communication Stream -->
+          <div class="terminal-chat-stream" id="portal-chat-stream" style="min-height: 220px; max-height: 340px; margin-bottom: 16px;">
+            <!-- Chat items appended dynamically -->
+          </div>
+
+          <!-- 2-Way Chat Input Bar -->
+          <div class="chat-input-bar">
+            <input type="text" id="portal-chat-input" class="chat-input-field" placeholder="Reply directly to assigned crew commander...">
+            <button type="button" id="btn-portal-send-chat" class="btn-send-chat">Transmit Reply</button>
+          </div>
+
+        </div>
+
+        <!-- Emergency Hotline Reminder -->
+        <div class="hotline-emergency-strip">
+          <div>
+            <strong>LAVASA MUNICIPAL EMERGENCY DIRECT ACCESS</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">
+              For immediate life safety or active structural fire, contact emergency control directly on <strong>112</strong> or <strong>+91 20 6654 0000</strong>.
+            </p>
+          </div>
+          <a href="tel:+912066540000" class="btn-pill btn-emergency" style="text-decoration: none; white-space: nowrap;">
+            Call Control Room
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Ambient WebGL & Portal Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="background-webgl.js"></script>
+
+  <script>
+    /**
+     * LAVASA UNITE — STANDALONE PROBLEM REPORTING LOGIC
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Theme Toggle
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          document.body.classList.toggle('dark-theme');
+          const isDark = document.body.classList.contains('dark-theme');
+          if (window.updateWebGLTheme) window.updateWebGLTheme(isDark);
+        });
+      }
+
+      // 2. Category Definition & Subproblems
+      const categoryOptions = {
+        water: [
+          'No water in taps (Complete outage)',
+          'Burst main pipeline on street / roadway flooding',
+          'Severe pressure drop across apartment block',
+          'Discolored / Brown water supply',
+          'Request emergency potable water tanker relief'
+        ],
+        electric: [
+          'Total residential / sector blackout',
+          'Sparking transformer / Explosion heard',
+          'Downed live high-voltage power lines on walkway',
+          'Critical voltage fluctuation / appliance danger',
+          'Dark street corridors causing vehicular hazard'
+        ],
+        security: [
+          'Immediate physical distress / Safety threat',
+          'Town Hall or public facility trespass',
+          'Suspicious perimeter prowler / Break-in risk',
+          'Uncontrolled crowd surge / De-escalation required',
+          'Urgent elderly citizen safety & welfare check'
+        ]
+      };
+
+      let selectedCategory = 'water';
+      let selectedSubproblem = categoryOptions.water[0];
+      let selectedUrgency = 'high';
+      let selectedSector = 'Sector 01: Dasve Promenade';
+
+      const catCards = document.querySelectorAll('.cat-select-card');
+      const subproblemContainer = document.getElementById('portal-subproblem-chips');
+
+      function renderSubproblems(catKey) {
+        if (!subproblemContainer) return;
+        subproblemContainer.innerHTML = '';
+        const list = categoryOptions[catKey] || [];
+        list.forEach((prob, idx) => {
+          const chip = document.createElement('div');
+          chip.className = `subproblem-chip ${idx === 0 ? 'selected' : ''}`;
+          chip.textContent = prob;
+          chip.addEventListener('click', () => {
+            document.querySelectorAll('.subproblem-chip').forEach(c => c.classList.remove('selected'));
+            chip.classList.add('selected');
+            selectedSubproblem = prob;
+          });
+          subproblemContainer.appendChild(chip);
+        });
+        selectedSubproblem = list[0];
+      }
+
+      function selectCategory(catKey) {
+        selectedCategory = catKey;
+        catCards.forEach(card => {
+          if (card.getAttribute('data-category') === catKey) card.classList.add('active');
+          else card.classList.remove('active');
+        });
+        renderSubproblems(catKey);
+      }
+
+      catCards.forEach(card => {
+        card.addEventListener('click', () => {
+          selectCategory(card.getAttribute('data-category'));
+        });
+      });
+
+      // Parse URL parameters for pre-selected category (?category=water|electric|security)
+      const urlParams = new URLSearchParams(window.location.search);
+      const preselect = urlParams.get('category');
+      if (preselect && categoryOptions[preselect]) {
+        selectCategory(preselect);
+      } else {
+        renderSubproblems('water');
+      }
+
+      // 3. Quick Sector Chips
+      const sectorChips = document.querySelectorAll('.sector-chip');
+      const addressInput = document.getElementById('portal-input-address');
+
+      sectorChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          sectorChips.forEach(c => c.classList.remove('selected'));
+          chip.classList.add('selected');
+          selectedSector = chip.getAttribute('data-sector');
+          if (addressInput) {
+            addressInput.value = `${selectedSector}, Block 4, Lavasa`;
+          }
+        });
+      });
+
+      // GPS Auto-Detect Simulation
+      const gpsBtn = document.getElementById('btn-gps-simulate');
+      const gpsLabel = document.getElementById('gps-status-indicator');
+      if (gpsBtn && gpsLabel) {
+        gpsBtn.addEventListener('click', () => {
+          gpsBtn.textContent = 'Detecting GPS...';
+          setTimeout(() => {
+            gpsBtn.innerHTML = '&check; Locked';
+            gpsLabel.textContent = 'Pinpoint: 18°24\'30.4"N 73°30\'36.1"E (Accuracy: ±2m)';
+            gpsLabel.style.color = 'var(--status-active)';
+            if (addressInput) {
+              addressInput.value = 'GPS Pinpoint: Dasve Promenade Near Intake Channel (Sector 01)';
+            }
+          }, 600);
+        });
+      }
+
+      // 4. Urgency Buttons
+      const urgencyButtons = document.querySelectorAll('.urgency-btn');
+      urgencyButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          urgencyButtons.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedUrgency = btn.getAttribute('data-urgency') || 'high';
+        });
+      });
+
+      // 5. Evidence Upload Dropzone Simulation
+      const dropzone = document.getElementById('dropzone-evidence');
+      const uploadStatus = document.getElementById('upload-status-tag');
+      if (dropzone && uploadStatus) {
+        dropzone.addEventListener('click', () => {
+          uploadStatus.style.display = 'inline-block';
+        });
+      }
+
+      // 6. Report Submission & Dispatch Activation
+      const formCard = document.getElementById('report-form-card');
+      const terminalCard = document.getElementById('portal-active-terminal');
+      const submitBtn = document.getElementById('btn-portal-submit');
+      const ticketIdElem = document.getElementById('portal-ticket-id');
+      const chatStream = document.getElementById('portal-chat-stream');
+      const chatInput = document.getElementById('portal-chat-input');
+      const chatSendBtn = document.getElementById('btn-portal-send-chat');
+      const newReportBtn = document.getElementById('btn-new-report');
+
+      let etaInterval = null;
+
+      function startEtaCountdown(totalSeconds) {
+        if (etaInterval) clearInterval(etaInterval);
+        const etaElem = document.getElementById('portal-eta-counter');
+        if (!etaElem) return;
+
+        let remaining = totalSeconds;
+        function updateDisplay() {
+          const mins = Math.floor(remaining / 60);
+          const secs = remaining % 60;
+          etaElem.textContent = `${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+          if (remaining > 0) remaining--;
+          else {
+            etaElem.textContent = 'ARRIVED ON SITE';
+            clearInterval(etaInterval);
+          }
+        }
+        updateDisplay();
+        etaInterval = setInterval(updateDisplay, 1000);
+      }
+
+      function appendMessage(sender, text, isCitizen = false) {
+        if (!chatStream) return;
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${isCitizen ? 'citizen' : 'team'}`;
+        bubble.innerHTML = `
+          <div class="chat-sender-tag">${sender}</div>
+          ${text}
+        `;
+        chatStream.appendChild(bubble);
+        chatStream.scrollTop = chatStream.scrollHeight;
+      }
+
+      if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+          const address = (addressInput && addressInput.value.trim()) ? addressInput.value.trim() : 'Dasve Promenade, Block 4, Sector 01';
+          const residentName = document.getElementById('portal-resident-name')?.value.trim() || 'Citizen';
+          
+          const prefix = selectedCategory.toUpperCase().substring(0, 3);
+          const randomNum = Math.floor(1000 + Math.random() * 9000);
+          const ticketId = `LVS-${prefix}-${randomNum}`;
+
+          if (ticketIdElem) ticketIdElem.textContent = ticketId;
+
+          // Update Summary block
+          const sumCat = document.getElementById('summary-category');
+          const sumProb = document.getElementById('summary-problem');
+          const sumCrew = document.getElementById('summary-crew');
+          const sumLoc = document.getElementById('summary-location');
+
+          let assignedUnit = 'HYDRO-UNIT 01 (Warasgaon Tech)';
+          if (selectedCategory === 'electric') assignedUnit = 'GRID RESPONSE CREW #02';
+          if (selectedCategory === 'security') assignedUnit = 'PATROL DELTA LAVASA (Sgt. Reyes)';
+
+          if (sumCat) sumCat.textContent = selectedCategory.toUpperCase();
+          if (sumProb) sumProb.textContent = selectedSubproblem;
+          if (sumCrew) sumCrew.textContent = assignedUnit;
+          if (sumLoc) sumLoc.textContent = address;
+
+          // Switch views
+          if (formCard) formCard.style.display = 'none';
+          if (terminalCard) {
+            terminalCard.classList.add('active');
+            terminalCard.scrollIntoView({ behavior: 'smooth' });
+          }
+
+          // Start ETA timer (approx 3m 45s)
+          startEtaCountdown(225);
+
+          // Populate initial chat
+          if (chatStream) {
+            chatStream.innerHTML = `
+              <div class="chat-bubble team">
+                <div class="chat-sender-tag">LAVASA TOWN HALL DISPATCH</div>
+                Report registered under <strong>${ticketId}</strong> for ${selectedCategory.toUpperCase()} crisis at ${address}. Priority: ${selectedUrgency.toUpperCase()}.
+              </div>
+            `;
+
+            setTimeout(() => {
+              appendMessage(
+                'FIELD CREW COMMANDER',
+                `Unit <strong>${assignedUnit}</strong> dispatched for ${residentName}. We are mobilizing with diagnostic equipment for "${selectedSubproblem}". ETA under 4 minutes.`
+              );
+            }, 1200);
+          }
+        });
+      }
+
+      // Handle 2-way live chat
+      function sendChat() {
+        if (!chatInput) return;
+        const msg = chatInput.value.trim();
+        if (!msg) return;
+
+        appendMessage('YOU (RESIDENT DIRECT CHANNEL)', msg, true);
+        chatInput.value = '';
+
+        setTimeout(() => {
+          const replies = [
+            "Technician has crossed the Dasve bridge; arriving at your location in 90 seconds.",
+            "Acknowledged. Manifold pressure sensor reading received; isolating feeder valve now.",
+            "Copy that. Patrol squad is on foot in your corridor. Stand by at your doorway.",
+            "Status confirmation: Repair is in progress. Full restoration expected in approximately 15 minutes."
+          ];
+          const chosen = replies[Math.floor(Math.random() * replies.length)];
+          appendMessage('FIELD CREW RESPONDER', chosen);
+        }, 1600);
+      }
+
+      if (chatSendBtn) chatSendBtn.addEventListener('click', sendChat);
+      if (chatInput) {
+        chatInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') sendChat();
+        });
+      }
+
+      // Reset to submit another report
+      if (newReportBtn) {
+        newReportBtn.addEventListener('click', () => {
+          if (terminalCard) terminalCard.classList.remove('active');
+          if (formCard) {
+            formCard.style.display = 'block';
+            formCard.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

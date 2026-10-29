@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LAVASA UNITE — Civic Emergency & Rapid Response Bridge</title>
+  <meta name="description" content="A minimalist municipal bridge replicating Immersive Garden's fluid aesthetic to accelerate response times for water failures, power outages, and immediate security interventions across Lavasa.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Core Libraries: Three.js, GSAP, ScrollTrigger, Lenis for authentic Immersive Garden fluidity -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+</head>
+<body class="lenis lenis-smooth">
+
+  <!-- Fullscreen WebGL Ambient Canvas (Immersive Garden replica) -->
+  <div id="webgl-container"></div>
+
+
+  <!-- Fixed Vertical Scroll Progress Dots (replicated from Immersive Garden) -->
+  <div class="scrollCursor">
+    <div class="dots dots__fast">
+      <div class="dot dot--active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <!-- Fixed Navigation Header -->
+  <header class="site-header">
+    <a href="#" class="header-brand" data-cursor="LAVASA">
+      <span class="brand-title">LAVASA / UNITE</span>
+    </a>
+
+    <nav class="header-nav">
+      <a href="#pillar-water" class="nav-link" data-cursor="WATER">01 / Water</a>
+      <a href="#pillar-electric" class="nav-link" data-cursor="POWER">02 / Electricity</a>
+      <a href="#pillar-security" class="nav-link" data-cursor="SECURITY">03 / Security Corps</a>
+      <a href="#radar-section" class="nav-link" data-cursor="RADAR">Municipal Radar</a>
+      <a href="#transparency-archive" class="nav-link" data-cursor="ARCHIVE">Resolution Log</a>
+      <a href="report.html" class="nav-link nav-link--report" style="color: var(--text-primary); font-weight: 500; border-bottom: 1px solid var(--text-primary);">Report a Problem</a>
+    </nav>
+
+    <div class="header-actions">
+      <!-- Dark / Light Theme Toggle -->
+      <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Obsidian / Concrete Theme" data-cursor="THEME">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+
+      <!-- Instant Emergency Dispatch & Problem Reporting Button -->
+      <a href="report.html" class="btn-pill btn-emergency" style="text-decoration: none;">
+        <span>Report a Problem &rarr;</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION (Immersive Garden Editorial Stagger) -->
+    <section class="hero-section" data-slide-section>
+      <div class="grid-container">
+        
+        <div class="hero-meta-strip" data-slide-item>
+          <span>CIVIC RAPID RESPONSE INTERFACE</span>
+          <span>DIRECT 2-WAY DISPATCH TELEMETRY</span>
+        </div>
+
+        <h1 class="hero-statement" data-slide-item>
+          Eliminating the <em>silence</em> between Lavasa citizens and field response teams.
+        </h1>
+
+        <div class="hero-description-block" data-slide-item>
+          <p>
+            When municipal infrastructure fails across Lavasa Hill City, residents are stranded without updates while field crews operate in isolation.
+            Lavasa Unite acts as a high-speed, direct conduit — streaming live telemetry, instant dispatch coordination, and two-way verification across tap water shortages, power grid collapses, and urgent security calls.
+          </p>
+        </div>
+
+        <div class="hero-action-block" data-slide-item>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <a href="report.html" class="underlinedButton" data-cursor="REPORT">
+              <span class="underlinedButton__text">Report a Municipal Problem &rarr;</span>
+              <span class="underlinedButton__line"></span>
+            </a>
+            <button class="underlinedButton open-bridge-trigger" data-cursor="OPEN DESK" style="font-size: 0.68rem; color: var(--text-muted);">
+              <span class="underlinedButton__text">Open Quick Dispatch Drawer &rarr;</span>
+              <span class="underlinedButton__line"></span>
+            </button>
+          </div>
+          
+          <div class="hero-metrics-bar">
+            <div class="metric-item">
+              <span class="metric-number">3.2m</span>
+              <span class="metric-label">Avg Field Arrival</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-number">18</span>
+              <span class="metric-label">Active Units</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-number">100%</span>
+              <span class="metric-label">Direct Relay</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- EDITORIAL APPROACH STATEMENT (Exact Immersive Garden format: small label + giant serif statement) -->
+    <section class="editorial-text-section" data-slide-section>
+      <div class="grid-container">
+        <div class="textBlock-wrap" data-slide-item>
+          <span class="textBlock__label">Our Approach</span>
+          <p class="textBlock__statement">
+            A real-time municipal bridge engineered to accelerate response times and provide direct two-way accountability across Lavasa's vital lifelines.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 / WATER CRISIS (Immersive Garden Asymmetric Project Block) -->
+    <section id="pillar-water" class="projectBlock" data-slide-section>
+      <div class="grid-container">
+        <div class="project-grid">
+          
+          <!-- Asymmetric Visual Slide Card -->
+          <div class="project-media-col" data-slide-media data-cursor="WATER">
+            <div class="media-frame water-frame">
+              <div class="media-overlay-tag">01 / HYDROLOGY NETWORK</div>
+              <div class="water-canvas-preview">
+                <div class="wave-visualizer">
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                  <div class="wave-bar"></div>
+                </div>
+                <div class="gauge-display">
+                  <span class="gauge-val" id="water-pressure-readout">0.4 BAR</span>
+                  <span class="gauge-lbl">Tap Supply Pressure &bull; Zone 3 Disrupted</span>
+                </div>
+                <button id="water-simulate-toggle" class="btn-pill" style="margin-top: 14px; font-size: 0.65rem;" data-cursor="CLICK">
+                  Simulate Valve Reopen
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Asymmetric Editorial Description -->
+          <div class="project-info-col" data-slide-info>
+            <div class="project-specs">Warasgaon Intake &bull; Pressure Conduits &bull; Tanker Relief</div>
+            <h2 class="project-title">01 / Water Supply &amp; Dry Taps</h2>
+            <p class="project-desc">
+              From sudden dry taps in apartment complexes to ruptured distribution lines along Dasve Promenade, water disruptions paralyze daily life. 
+              Lavasa Unite connects residents directly with hydraulic repair engineers and emergency potable water tanker routing.
+            </p>
+            
+            <ul class="project-features-list">
+              <li>Zero tap flow and household dry-out escalation</li>
+              <li>Burst underground mains &amp; hillside roadway flooding</li>
+              <li>Low supply pressure disabling water heaters and booster pumps</li>
+              <li>Water discoloration or contamination alert broadcast</li>
+              <li>Direct emergency drinking water tanker routing</li>
+            </ul>
+
+            <div class="project-action-row">
+              <a href="report.html?category=water" class="underlinedButton open-bridge-trigger" data-preselect="water" data-cursor="DISPATCH">
+                <span class="underlinedButton__text">Deploy Water Response Crew &rarr;</span>
+                <span class="underlinedButton__line"></span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 / ELECTRICITY PROBLEMS (Inverted Asymmetric Slide Layout) -->
+    <section id="pillar-electric" class="projectBlock" data-slide-section>
+      <div class="grid-container">
+        <div class="project-grid layout-inverted">
+          
+          <!-- Editorial Description on Left -->
+          <div class="project-info-col" data-slide-info>
+            <div class="project-specs">33kV Substation &bull; Hillside Feeders &bull; Transformer Emergency</div>
+            <h2 class="project-title">02 / Power Outages &amp; Grid Collapse</h2>
+            <p class="project-desc">
+              Sudden electrical blackouts leave vulnerable residents without light, heat, or medical machinery in the hills. 
+              Our bridge routes field reports straight to the grid control room and mobile electricians, cutting out the town hall call bottleneck.
+            </p>
+            
+            <ul class="project-features-list">
+              <li>Total blackout across residential &amp; market sectors</li>
+              <li>Sparking transformers &amp; explosive surge hazards</li>
+              <li>Downed live high-voltage cables on pedestrian walkways</li>
+              <li>Dangerous brownouts &amp; voltage fluctuation alerts</li>
+              <li>Dark street corridors along Mugaon and Portofino</li>
+            </ul>
+
+            <div class="project-action-row">
+              <a href="report.html?category=electric" class="underlinedButton open-bridge-trigger" data-preselect="electric" data-cursor="DISPATCH">
+                <span class="underlinedButton__text">Deploy Grid Response Crew &rarr;</span>
+                <span class="underlinedButton__line"></span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Asymmetric Visual Slide Card on Right -->
+          <div class="project-media-col" data-slide-media data-cursor="POWER">
+            <div class="media-frame electric-frame">
+              <div class="media-overlay-tag">02 / POWER GRID STABILITY</div>
+              <div class="electric-canvas-preview">
+                <div class="grid-pulse-ring">
+                  <div class="ring-node"></div>
+                  <div class="ring-node"></div>
+                  <div class="ring-node"></div>
+                </div>
+                <div class="gauge-display">
+                  <span class="gauge-val" style="color: var(--accent-electric);">33 kV</span>
+                  <span class="gauge-lbl">Substation Relay 02 &bull; Grid Synchronized</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); margin-top: 14px;">
+                  12/12 PRIMARY FEEDERS ACTIVE &bull; CREW STANDBY
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 / IMMEDIATE SECURITY RESPONSE TEAM -->
+    <section id="pillar-security" class="projectBlock" data-slide-section>
+      <div class="grid-container">
+        <div class="project-grid">
+          
+          <!-- Asymmetric Visual Slide Card -->
+          <div class="project-media-col" data-slide-media data-cursor="SECURITY">
+            <div class="media-frame security-frame">
+              <div class="media-overlay-tag">03 / RAPID CIVIC INTERVENTION</div>
+              <div class="security-canvas-preview">
+                <div class="radar-scan-line"></div>
+                <div class="gauge-display">
+                  <span class="gauge-val" style="color: var(--accent-security);">3m 15s</span>
+                  <span class="gauge-lbl">Average Mobile Patrol Response Time</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); margin-top: 14px;">
+                  PATROL DELTA ON DUTY &bull; ENCRYPTED GPS RELAY
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Asymmetric Editorial Description -->
+          <div class="project-info-col" data-slide-info>
+            <div class="project-specs">24/7 Mobile Patrol &bull; Ghat Pass Security &bull; De-escalation</div>
+            <h2 class="project-title">03 / Immediate Response Security</h2>
+            <p class="project-desc">
+              When seconds dictate personal safety, there is zero tolerance for unanswered town hall switches. 
+              Residents trigger direct encrypted beacons to on-duty mobile security units, providing GPS coordinates and instant field communications.
+            </p>
+            
+            <ul class="project-features-list">
+              <li>Immediate physical distress and emergency intervention</li>
+              <li>Perimeter breach, trespass, or vandalism containment</li>
+              <li>Suspicious activity along hill trails and public walkways</li>
+              <li>Crowd surge and civil de-escalation protocol</li>
+              <li>Urgent elderly citizen safety and welfare check</li>
+            </ul>
+
+            <div class="project-action-row">
+              <a href="report.html?category=security" class="underlinedButton open-bridge-trigger" data-preselect="security" data-cursor="EMERGENCY" style="color: var(--accent-security);">
+                <span class="underlinedButton__text">Trigger Rapid Security Patrol &rarr;</span>
+                <span class="underlinedButton__line"></span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- EDITORIAL MISSION STATEMENT -->
+    <section class="editorial-text-section" data-slide-section>
+      <div class="grid-container">
+        <div class="textBlock-wrap" data-slide-item>
+          <span class="textBlock__label">Our Mission</span>
+          <p class="textBlock__statement">
+            We partner directly with the residents of Lavasa, restoring water, light, and safety with absolute operational transparency.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MUNICIPAL OPERATIONS RADAR (Slide Section) -->
+    <section id="radar-section" class="radar-section" data-slide-section>
+      <div class="grid-container">
+        
+        <div class="radar-header-block" data-slide-item>
+          <div>
+            <span class="section-label">LIVE SECTOR TELEMETRY</span>
+            <h2 class="section-heading-editorial" style="margin-bottom: 8px;">Municipal Operations Radar</h2>
+            <p class="section-subtext">Real-time status across Lavasa districts. Hover on any node to inspect field incidents.</p>
+          </div>
+
+          <div class="radar-controls">
+            <button class="filter-chip active" data-filter="all" data-cursor="FILTER">All Domains</button>
+            <button class="filter-chip" data-filter="water" data-cursor="FILTER">Water</button>
+            <button class="filter-chip" data-filter="electric" data-cursor="FILTER">Electricity</button>
+            <button class="filter-chip" data-filter="security" data-cursor="FILTER">Security</button>
+          </div>
+        </div>
+
+        <div class="radar-canvas-card" data-slide-item data-cursor="RADAR">
+          <canvas id="municipal-radar-canvas"></canvas>
+          <div class="radar-overlay-info">
+            <div class="info-title">MUNICIPAL CIVIC RADAR</div>
+            <div class="info-desc">Real-time status of water distribution, electrical grid stability, and active security response teams across Lavasa. Hover over any node to inspect telemetry.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TRANSPARENCY ARCHIVE -->
+    <section id="transparency-archive" class="transparency-section" data-slide-section>
+      <div class="grid-container">
+        
+        <div style="grid-column: 2 / span 10; margin-bottom: 30px;" data-slide-item>
+          <span class="section-label">ACCOUNTABILITY ARCHIVE</span>
+          <h2 class="section-heading-editorial">Recent Resolved Incidents</h2>
+          <p class="section-subtext">Eliminating the communication void with verified timestamps from citizen report to field team resolution.</p>
+        </div>
+
+        <div class="transparency-list" data-slide-item>
+          <div class="transparency-item" data-cursor="VIEW">
+            <span class="item-code">LVS-WAT-819</span>
+            <span class="item-title">Main 14C Pipe Rupture &bull; Dasve Promenade</span>
+            <span class="item-sector">Sector 01 &bull; Hydro Unit 03</span>
+            <span class="item-duration">Resolved in 34m</span>
+          </div>
+
+          <div class="transparency-item" data-cursor="VIEW">
+            <span class="item-code">LVS-ELE-742</span>
+            <span class="item-title">Substation B Surge &bull; Mugaon Ridge</span>
+            <span class="item-sector">Sector 03 &bull; Grid Crew 07</span>
+            <span class="item-duration">Resolved in 18m</span>
+          </div>
+
+          <div class="transparency-item" data-cursor="VIEW">
+            <span class="item-code">LVS-SEC-904</span>
+            <span class="item-title">Town Hall Core Disturbance &bull; De-escalation</span>
+            <span class="item-sector">Sector 02 &bull; Patrol Delta</span>
+            <span class="item-duration">Resolved in 4m</span>
+          </div>
+
+          <div class="transparency-item" data-cursor="VIEW">
+            <span class="item-code">LVS-WAT-650</span>
+            <span class="item-title">Zero Tap Flow in Lakeside Villas &bull; Pump Reset</span>
+            <span class="item-sector">Sector 05 &bull; Water Dispatch</span>
+            <span class="item-duration">Resolved in 22m</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- SOUND TOGGLE WIDGET (Exact Immersive Garden replica) -->
+  <div id="sound-toggle-widget" class="sound-widget" data-cursor="SOUND">
+    <div class="sound-icon-ring">
+      <svg viewBox="0 0 24 24">
+        <circle class="sound-ring-bg" cx="12" cy="12" r="10"></circle>
+        <circle class="sound-ring-active" cx="12" cy="12" r="10"></circle>
+      </svg>
+      <div class="sound-center-dot"></div>
+    </div>
+    <span id="sound-state-text" class="sound-label">SOUND [ OFF ]</span>
+  </div>
+
+  <!-- THE BRIDGE DESK DRAWER (Modal / 2-Way Live Dispatch Terminal) -->
+  <div id="bridge-modal-backdrop" class="bridge-modal-backdrop">
+    <div class="bridge-drawer" data-lenis-prevent>
+      
+      <div class="drawer-header">
+        <div>
+          <span class="step-counter">DIRECT CIVIC CHANNEL</span>
+          <h2 class="drawer-title">Bridge Desk</h2>
+          <a href="report.html" style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); text-decoration: underline; margin-top: 4px; display: inline-block;">Open Dedicated Problem Reporting Page &nearr;</a>
+        </div>
+        <button id="btn-close-drawer" class="btn-close-drawer" data-cursor="CLOSE">Close &times;</button>
+      </div>
+
+      <!-- Incident Submission Form -->
+      <div id="bridge-form-section">
+        
+        <!-- Step 1: Select Domain -->
+        <div class="form-group">
+          <label class="form-label">01 / Choose Crisis Domain</label>
+          <div class="category-selector-grid">
+            <button class="category-option-btn selected" data-category="water" data-cursor="WATER">
+              <span class="cat-code">01 / HYDROLOGY</span>
+              <span class="cat-name">Water &amp; Taps</span>
+            </button>
+            <button class="category-option-btn" data-category="electric" data-cursor="GRID">
+              <span class="cat-code">02 / ENERGY</span>
+              <span class="cat-name">Electricity</span>
+            </button>
+            <button class="category-option-btn" data-category="security" data-cursor="PATROL">
+              <span class="cat-code">03 / RAPID CORPS</span>
+              <span class="cat-name">Security Team</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Specific Issue -->
+        <div class="form-group">
+          <label class="form-label">02 / Nature of Disruption</label>
+          <div id="subproblem-chips-container" class="subproblem-chips">
+            <div class="subproblem-chip selected">No water in taps (Complete outage)</div>
+            <div class="subproblem-chip">Burst main pipeline on street</div>
+            <div class="subproblem-chip">Severe pressure drop across neighborhood</div>
+            <div class="subproblem-chip">Discolored / Brown water supply</div>
+            <div class="subproblem-chip">Request emergency potable water tanker</div>
+          </div>
+        </div>
+
+        <!-- Step 3: Location / Address -->
+        <div class="form-group">
+          <label class="form-label">03 / Exact Location &amp; Sector</label>
+          <input type="text" id="input-address" class="input-minimal" placeholder="e.g. Dasve Promenade, Block 4, Sector 01" value="Dasve Promenade, Block 4, Sector 01">
+        </div>
+
+        <!-- Step 4: Urgency Level -->
+        <div class="form-group">
+          <label class="form-label">04 / Urgency Classification</label>
+          <div class="urgency-toggle-group">
+            <button class="urgency-btn" data-urgency="standard" data-cursor="SELECT">Standard Priority</button>
+            <button class="urgency-btn selected" data-urgency="high" data-cursor="SELECT">High Urgency</button>
+            <button class="urgency-btn" data-urgency="critical" data-cursor="CRITICAL">Critical &bull; Immediate Safety</button>
+          </div>
+        </div>
+
+        <!-- Step 5: Notes -->
+        <div class="form-group">
+          <label class="form-label">05 / Notes for Field Response Unit</label>
+          <textarea id="input-details" class="input-minimal" placeholder="Describe issue specifics...">Taps completely dry since morning across our entire residential block.</textarea>
+        </div>
+
+        <button id="btn-submit-dispatch" class="btn-dispatch-submit" data-cursor="TRANSMIT">
+          &rarr; Transmit Dispatch to Field Unit
+        </button>
+
+      </div>
+
+      <!-- Active Ticket & 2-Way Live Communication Terminal -->
+      <div id="active-ticket-terminal" class="active-ticket-terminal">
+        
+        <div class="terminal-header">
+          <div>
+            <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted);">ACTIVE BRIDGE SESSION</span>
+            <div id="terminal-ticket-id" class="ticket-id-badge">LVS-WAT-9482</div>
+          </div>
+          <span class="active-indicator-dot"></span>
+        </div>
+
+        <!-- 4-Step Timeline -->
+        <div class="dispatch-timeline">
+          <div class="timeline-step completed">
+            <div class="step-node">&check;</div>
+            <span class="step-title">Received</span>
+          </div>
+          <div id="timeline-step-2" class="timeline-step completed">
+            <div class="step-node">&check;</div>
+            <span class="step-title">Unit Assigned</span>
+          </div>
+          <div id="timeline-step-3" class="timeline-step active">
+            <div class="step-node">3</div>
+            <span class="step-title">En Route</span>
+          </div>
+          <div class="timeline-step">
+            <div class="step-node">4</div>
+            <span class="step-title">Resolved</span>
+          </div>
+        </div>
+
+        <!-- Live 2-Way Chat Stream -->
+        <div id="terminal-chat-stream" class="terminal-chat-stream"></div>
+
+        <!-- Chat Input Bar -->
+        <div class="chat-input-bar">
+          <input type="text" id="terminal-chat-input" class="chat-input-field" placeholder="Reply directly to response team commander...">
+          <button id="btn-send-chat" class="btn-send-chat" data-cursor="SEND">Send</button>
+        </div>
+
+        <div style="margin-top: 18px; display: flex; justify-content: space-between; align-items: center;">
+          <button id="btn-drawer-new-report" class="btn-pill" style="font-size: 0.68rem; cursor: pointer;">+ Submit Another Report</button>
+          <a href="report.html" style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-secondary); text-decoration: underline;">Open Full Problem Reporting Page &rarr;</a>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SITE FOOTER (Immersive Garden large CTA & editorial footer) -->
+  <footer class="site-footer">
+    <div class="grid-container">
+      <div class="footer-cta-wrap" data-slide-item>
+        <button class="underlinedButton underlinedButton--largeFooter open-bridge-trigger" data-after="(03 ACTIVE PILLARS)" data-cursor="DISPATCH">
+          <span class="underlinedButton__text">Connect to Response Desk</span>
+          <span class="underlinedButton__line"></span>
+        </button>
+      </div>
+
+      <div class="footer-main-row">
+        <div>
+          <div class="footer-brand">LAVASA UNITE</div>
+          <p class="footer-desc">
+            Designed to bridge the communication void between citizens in crisis and municipal field response teams.
+          </p>
+        </div>
+        <div class="footer-contacts">
+          <div>LAVASA TOWN HALL &bull; RAPID CIVIC DISPATCH</div>
+          <div class="footer-subtext">24/7 ENCRYPTED CIVIC RELAY</div>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <span>&copy; 2026 LAVASA UNITE EMERGENCY RESPONSE NETWORK</span>
+        <span>MUNICIPAL LIFE SUPPORT &bull; WATER &bull; POWER &bull; PATROL</span>
+        <span>LAT 18.4082&deg; N &bull; LON 73.5100&deg; E</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="background-webgl.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
